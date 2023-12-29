@@ -262,13 +262,5 @@
         "criteria": {
             "gold": 9223372036854775807
         }
-    },
-    "secret_achievement": {
-        "name": "🤫 EZ",
-        "description": "WHAT?!",
-        "hidden": false,
-        "criteria": {
-            "secret": 123
-        }
     }
 }
