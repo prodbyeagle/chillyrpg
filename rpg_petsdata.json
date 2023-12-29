@@ -1,0 +1,19 @@
+{
+    "pets": [
+        {"name": "Blaze", "rarity": "Rare", "xp_bonus": 2, "gold_bonus": 2, "clicker_bonus": 2, "fish_bonus": 2, "fight_bonus": 2, "price": 2500},
+        {"name": "Aurora", "rarity": "Epic", "xp_bonus": 3, "gold_bonus": 3, "clicker_bonus": 3, "fish_bonus": 3, "fight_bonus": 3, "price": 5000},
+        {"name": "Spectre", "rarity": "Legendary", "xp_bonus": 4, "gold_bonus": 4, "clicker_bonus": 4, "fish_bonus": 4, "fight_bonus": 4, "price": 75000},
+        {"name": "Wraith", "rarity": "Mythic", "xp_bonus": 5, "gold_bonus": 5, "clicker_bonus": 5, "fish_bonus": 5, "fight_bonus": 5, "price": 150000},
+        {"name": "Quasar", "rarity": "Epic", "xp_bonus": 3, "gold_bonus": 3, "clicker_bonus": 3, "fish_bonus": 3, "fight_bonus": 3, "price": 5000},
+        {"name": "Nebula", "rarity": "Rare", "xp_bonus": 2, "gold_bonus": 2, "clicker_bonus": 2, "fish_bonus": 2, "fight_bonus": 2, "price": 2500},
+        {"name": "Abyssal", "rarity": "Common", "xp_bonus": 1, "gold_bonus": 1, "clicker_bonus": 1, "fish_bonus": 1, "fight_bonus": 1, "price": 1000},
+        {"name": "Whisper", "rarity": "Rare", "xp_bonus": 2, "gold_bonus": 2, "clicker_bonus": 2, "fish_bonus": 2, "fight_bonus": 2, "price": 2500},
+        {"name": "Ripple", "rarity": "Common", "xp_bonus": 1, "gold_bonus": 1, "clicker_bonus": 1, "fish_bonus": 1, "fight_bonus": 1, "price": 1000},
+        {"name": "Thunderclaw", "rarity": "Legendary", "xp_bonus": 4, "gold_bonus": 4, "clicker_bonus": 4, "fish_bonus": 4, "fight_bonus": 4, "price": 75000},
+        {"name": "Fluffy", "rarity": "Common", "xp_bonus": 1, "gold_bonus": 1, "clicker_bonus": 1, "fish_bonus": 1, "fight_bonus": 1, "price": 1000},
+        {"name": "Shadow", "rarity": "Rare", "xp_bonus": 2, "gold_bonus": 2, "clicker_bonus": 2, "fish_bonus": 2, "fight_bonus": 2, "price": 2500},
+        {"name": "Frostbite", "rarity": "Epic", "xp_bonus": 3, "gold_bonus": 3, "clicker_bonus": 3, "fish_bonus": 3, "fight_bonus": 3, "price": 5000},
+        {"name": "Inferno", "rarity": "Legendary", "xp_bonus": 4, "gold_bonus": 4, "clicker_bonus": 4, "fish_bonus": 4, "fight_bonus": 4, "price": 75000},
+        {"name": "Celestial", "rarity": "Mythic", "xp_bonus": 0, "gold_bonus": 0, "clicker_bonus": 0, "fish_bonus": 5, "fight_bonus": 5, "price": 150000}
+    ]
+}

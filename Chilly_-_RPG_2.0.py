@@ -3876,33 +3876,52 @@ async def fight(ctx, opponent: nextcord.Member):
 
 # -------------
 # PET SYSTEM
+def load_pet_data():
+    # Lade die Pet-Daten aus der JSON-Datei
+    with open('rpg_petsdata.json', 'r') as file:
+        pet_data = json.load(file)
+    return pet_data['pets']       
+        
 class Pet:
-    def __init__(self, name, rarity, level=1, xp_bonus=0, gold_bonus=0,clicker_bonus=0,fish_bonus=0,fight_bonus=0):
+    def __init__(self, name, rarity, level=1, xp=0, xp_bonus=0, gold_bonus=0, clicker_bonus=0, fish_bonus=0, fight_bonus=0):
         self.name = name
         self.rarity = rarity
         self.level = level
+        self.xp = xp
         self.xp_bonus = xp_bonus
         self.gold_bonus = gold_bonus
         self.clicker_bonus = clicker_bonus
         self.fish_bonus = fish_bonus
         self.fight_bonus = fight_bonus
 
-def load_pet_data():
-    with open('rpg_petdata.json', 'r') as file:
-        pet_data = json.load(file)
-    return pet_data
-
 def create_random_pet(base_pet):
     name = base_pet['name']
     rarity = base_pet['rarity']
     level = 1
-    xp_bonus = 1
-    gold_bonus = 1
-    clicker_bonus = 1
-    fish_bonus = 1
-    fight_bonus = 1
+    xp = 0
 
-    return Pet(name, rarity, level, xp_bonus, gold_bonus, clicker_bonus, fish_bonus, fight_bonus)
+    available_bonuses = ["xp_bonus", "gold_bonus", "clicker_bonus", "fish_bonus", "fight_bonus"]
+    selected_bonuses = random.sample(available_bonuses, min(3, len(available_bonuses)))
+
+    xp_bonus = 0
+    gold_bonus = 0
+    clicker_bonus = 0
+    fish_bonus = 0
+    fight_bonus = 0
+
+    for bonus in selected_bonuses:
+        if bonus == "xp_bonus":
+            xp_bonus = random.randint(1, 6)
+        elif bonus == "gold_bonus":
+            gold_bonus = random.randint(1, 8)
+        elif bonus == "clicker_bonus":
+            clicker_bonus = random.randint(1, 5)
+        elif bonus == "fish_bonus":
+            fish_bonus = random.randint(1, 5)
+        elif bonus == "fight_bonus":
+            fight_bonus = random.randint(1, 5)
+
+    return Pet(name, rarity, level, xp, xp_bonus, gold_bonus, clicker_bonus, fish_bonus, fight_bonus)
 
 def update_pet_level_and_rarity(pet):
     if pet.level >= 250:
@@ -3920,6 +3939,135 @@ def update_pet_level_and_rarity(pet):
     elif pet.level >= 1:
         pet.rarity = 'Basic'
 
+async def purchase_pet(player_name, pet_name):
+    player_data = await load_player_data(player_name)
+    pet_data = load_pet_data()
+
+    selected_pet = None
+    for pet in pet_data:
+        if pet['name'] == pet_name:
+            selected_pet = pet
+            break
+
+    if selected_pet and player_data["gold"] >= selected_pet.get('price', 0):
+        player_data["gold"] -= selected_pet.get('price', 0)
+
+        if "pets" not in player_data:
+            player_data["pets"] = {}
+
+        new_pet = create_random_pet(selected_pet)
+        player_data["pets"][pet_name] = {
+            "name": new_pet.name,
+            "rarity": new_pet.rarity,
+            "level": new_pet.level,
+            "xp": new_pet.xp,
+            "xp_bonus": new_pet.xp_bonus,
+            "gold_bonus": new_pet.gold_bonus,
+            "clicker_bonus": new_pet.clicker_bonus,
+            "fish_bonus": new_pet.fish_bonus,
+            "fight_bonus": new_pet.fight_bonus
+        }
+
+        await save_player_data(player_name, player_data)
+        return True
+    else:
+        return False
+
+def get_pet_price(pet_name):
+    pet_data = load_pet_data()
+    for pet in pet_data:
+        if pet['name'] == pet_name:
+            return pet.get('price', 0)
+    return 0
+
+
+async def afk_rewards():
+    if nextcord.Status.idle or nextcord.Status.offline:
+        pass
+
+class AdoptPetButton(nextcord.ui.Button):
+    def __init__(self, pet_data, **kwargs):
+        super().__init__(**kwargs)
+        self.pet_data = pet_data
+
+class AdoptPetView(View):
+    def __init__(self, player_data, **kwargs):
+        super().__init__(**kwargs)
+        self.player_data = player_data
+
+async def adopt_pet_callback(interaction, button, player_data, selected_pet):
+    pet_price = get_pet_price(selected_pet['name'])
+
+    if player_data["gold"] >= pet_price:
+        if selected_pet['name'] in player_data.get('pets', {}):
+            embed = nextcord.Embed(
+                title="Pet Already Owned",
+                description="Du besitzt bereits dieses Haustier.",
+                color=nextcord.Color.red()
+            )
+            embed.set_footer(text=f"You have {player_data['gold']} Gold", icon_url=pic_link)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+            return
+
+        success = await purchase_pet(player_data['name'], selected_pet['name'])
+
+        embed = nextcord.Embed()
+        embed.set_footer(text=f"You have {player_data['gold']} Gold", icon_url=pic_link)
+
+        if success:
+            player_data["gold"] -= pet_price
+            embed = nextcord.Embed(
+                title="Success!",
+                description=f"You've successfully adopted {selected_pet['name']}!",
+                color=nextcord.Color.green()
+            )
+            embed.set_footer(text=f"You have {player_data['gold']} Gold", icon_url=pic_link)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        else:
+            embed = nextcord.Embed(
+                title="Error",
+                description="Fehler beim Adoptieren des Haustiers.",
+                color=nextcord.Color.red()
+            )
+            embed.set_footer(text=f"You have {player_data['gold']} Gold", icon_url=pic_link)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+    else:
+        embed = nextcord.Embed(
+            title="Not Enough Gold",
+            description="Du hast nicht genug Gold, um dieses Haustier zu adoptieren.",
+            color=nextcord.Color.red()
+        )
+        embed.set_footer(text=f"You have {player_data['gold']} Gold", icon_url=pic_link)
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+
+@bot.slash_command(
+    name='adoptpet',
+    description='🐶 Adopt a New Pet!'
+)
+@log_command('adoptpet')
+async def adoptpet(ctx):
+    player_name = ctx.user.name
+    player_data = await load_player_data(player_name)
+    pets_data = load_pet_data()
+
+    view = AdoptPetView(player_data)
+
+    embed = nextcord.Embed(title="Adopt a New Pet", description="Choose a pet to adopt!")
+
+    for pet in pets_data:
+        embed.add_field(
+            name=f"{pet['name']} ({pet['rarity']})", 
+            value=f"Price: {pet.get('price', 0)} gold",
+            inline=True
+        )
+        embed.set_footer(text=f"You have {player_data['gold']} Gold", icon_url=pic_link) 
+
+        button = AdoptPetButton(style=nextcord.ButtonStyle.primary, label=pet['name'], pet_data=pet)
+        button.callback = lambda i, p=pet: adopt_pet_callback(i, button, player_data, p)
+
+        view.add_item(button)
+
+    await ctx.send(embed=embed, view=view)
 # -------------
 # ADMIN CMDS:
 
