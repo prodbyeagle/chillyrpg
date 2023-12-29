@@ -1,0 +1,44 @@
+{
+    "More Clicks": {
+        "name": "More Clicks",
+        "description": "Allows you to get more Clicks in the Clicker Game.",
+        "maxlevel": 50,
+        "current_level": 0,
+        "cost": 150
+    },
+    "Reduce Rewards Cooldown": {
+        "name": "Reduce Rewards Cooldown",
+        "description": "By Getting this Upgrade you can decrease the Time between the daily, weekly, monthly cooldown..",
+        "maxlevel": 5,
+        "current_level": 0,
+        "cost": 200
+    },        
+    "Reduce Fishing Cooldown": {
+        "name": "Reduce Fishing Cooldown",
+        "description": "Reduces the cooldown time between fishing attempts.",
+        "maxlevel": 5,
+        "current_level": 0,
+        "cost": 100
+    },        
+    "Unlock /fish": {
+        "name": "Unlock /fish",
+        "description": "Get the /fish and Fish everyday hour an Item!",
+        "maxlevel": 1,
+        "current_level": 0,
+        "cost": 550
+    },        
+    "Unlock /monthly": {
+        "name": "Unlock /monthly",
+        "description": "Unlock monthly rewards! Gain a random amount of XP and Gold to power up your medieval journey.",
+        "maxlevel": 1,
+        "current_level": 0,
+        "cost": 1500
+    },        
+    "Unlock /weekly": {
+        "name": "Unlock /weekly",
+        "description": "Unlock weekly rewards! Gain a random amount of XP and Gold to power up your medieval journey.",
+        "maxlevel": 1,
+        "current_level": 0,
+        "cost": 750
+    }
+}

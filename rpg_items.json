@@ -1,0 +1,78 @@
+[
+    {
+        "name": "Fishing Rod",
+        "value": 150,
+        "rarity": "Rare",
+        "durability": 50,
+        "enchantments": []
+    },
+    {
+        "name": "Pro Fishing Rod",
+        "value": 750,
+        "rarity": "Epic",
+        "durability": 250,
+        "enchantments": []
+    },
+    {
+        "name": "Broken Fishing Rod",
+        "value": 10,
+        "rarity": "Basic",
+        "durability": 20,
+        "enchantments": []
+    },
+    {
+        "name": "Admin Fishing Rod",
+        "value": 10000000,
+        "rarity": "Admin",
+        "durability": 1750,
+        "enchantments": [
+            {
+                "name": "Fortune",
+                "level": 10,
+                "description": "Increases the likelihood of obtaining rare items."
+            }
+        ]
+    },
+    {
+        "name": "1",
+        "value": 1000,
+        "rarity": "Rare",
+        "durability": 1234567123,
+        "enchantments": []
+    },
+    {
+        "name": "12",
+        "value": 1000,
+        "rarity": "Epic",
+        "durability": 1234567123,
+        "enchantments": []
+    },
+    {
+        "name": "123",
+        "value": 1000,
+        "rarity": "Legendary",
+        "durability": 1234567123,
+        "enchantments": []
+    },
+    {
+        "name": "1234",
+        "value": 1000,
+        "rarity": "Secret",
+        "durability": 1234567123,
+        "enchantments": []
+    },
+    {
+        "name": "12345",
+        "value": 1000,
+        "rarity": "Exclusive",
+        "durability": 1234567123,
+        "enchantments": []
+    },
+    {
+        "name": "123456",
+        "value": 1000,
+        "rarity": "Admin",
+        "durability": 1234567123,
+        "enchantments": []
+    }
+]

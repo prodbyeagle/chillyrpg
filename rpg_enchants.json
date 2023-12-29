@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Fire",
+    "level": 10,
+    "description": "Fires a beam of flame that deals damage."
+  },
+  {
+    "name": "Frost",
+    "level": 5,
+    "description": "Slows the target."
+  },
+  {
+    "name": "Healing",
+    "level": 9,
+    "description": "Heals the user."
+  },
+  {
+    "name": "Strength",
+    "level": 8,
+    "description": "Increases the user's damage."
+  },
+  {
+    "name": "Vulnerability",
+    "level": 4,
+    "description": "Reduces the target's damage."
+  },
+  {
+    "name": "Damage",
+    "level": 6,
+    "description": "Increases the item's damage."
+  },
+  {
+    "name": "Healing",
+    "level": 2,
+    "description": "Increases the item's healing."
+  },
+  {
+    "name": "Speed",
+    "level": 3,
+    "description": "Increases movement speed."
+  },
+  {
+    "name": "Invisibility",
+    "level": 1,
+    "description": "Makes the user invisible for a short duration."
+  },
+  {
+    "name": "Fortune",
+    "level": 10,
+    "description": "Increases the likelihood of obtaining rare items."
+  },
+  {
+    "name": "Teleportation",
+    "level": 1,
+    "description": "Allows the user to teleport to a designated location."
+  }
+]

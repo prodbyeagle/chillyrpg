@@ -1,0 +1,274 @@
+{
+    "clicker_onemillion": {
+        "name": "💯 1 MILLION CLICKS",
+        "description": "Collect a Total of 1000000 Clicks.",
+        "hidden": false,
+        "criteria": {
+            "clicks": 1000000
+        }
+    },
+    "clicker_fivemillion": {
+        "name": "💎 5 MILLION CLICKS",
+        "description": "Collect a Total of 5000000 Clicks.",
+        "hidden": true,
+        "criteria": {
+            "clicks": 5000000
+        }
+    },
+    "clicker_tenmillion": {
+        "name": "🚀 10 MILLION CLICKS",
+        "description": "Collect a Total of 10000000 Clicks.",
+        "hidden": true,
+        "criteria": {
+            "clicks": 10000000
+        }
+    },
+    "clicker_master": {
+        "name": "🚀 ULTIMATE CLICKER MASTER",
+        "description": "Reach the Master Clicker Status (20 Mil).",
+        "hidden": true,
+        "criteria": {
+            "clicks": 20000000
+        }
+    },
+    "fight_winner": {
+        "name": "🏆 Fight Winner",
+        "description": "Win your first fight.",
+        "hidden": false,
+        "criteria": {
+            "fights_won": 1
+        }
+    },
+    "fight_champion": {
+        "name": "🥇 Fight Champion",
+        "description": "Win 25 fights.",
+        "hidden": false,
+        "criteria": {
+            "fights_won": 25
+        }
+    },
+    "undefeated_warrior": {
+        "name": "🚀 ULTIMATE FIGHT MASTER",
+        "description": "Remain undefeated in 100 fights.",
+        "hidden": true,
+        "criteria": {
+            "fights_won": 100
+        }
+    },
+    "level_novice_1": {
+        "name": "👶 Novice (LVL 1)",
+        "description": "Reach Level 1.",
+        "hidden": false,
+        "criteria": {
+            "level": 1
+        }
+    },
+    "level_apprentice_10": {
+        "name": "🧑‍🎓 Apprentice (LVL 10)",
+        "description": "Reach Level 10.",
+        "hidden": false,
+        "criteria": {
+            "level": 10
+        }
+    },
+    "level_master_50": {
+        "name": "👑 Master (LVL 50)",
+        "description": "Reach Level 50.",
+        "hidden": false,
+        "criteria": {
+            "level": 50
+        }
+    },
+    "level_mythical_70": {
+        "name": "🌌 Mythical (LVL 70)",
+        "description": "Reach Level 70.",
+        "hidden": false,
+        "criteria": {
+            "level": 70
+        }
+    },
+    "level_divine_90": {
+        "name": "🌈 Divine (LVL 90)",
+        "description": "Reach Level 90.",
+        "hidden": false,
+        "criteria": {
+            "level": 90
+        }
+    },
+    "level_max_level_100": {
+        "name": "🎉 MAX LEVEL? (LVL 100)",
+        "description": "Reach Level 100.",
+        "hidden": false,
+        "criteria": {
+            "level": 100
+        }
+    },
+    "level_senior_200": {
+        "name": "🏆 Senior (LVL 200)",
+        "description": "Reach Level 200.",
+        "hidden": true,
+        "criteria": {
+            "level": 200
+        }
+    },
+    "level_grandmaster_300": {
+        "name": "👑 Grandmaster (LVL 300)",
+        "description": "Reach Level 300.",
+        "hidden": true,
+        "criteria": {
+            "level": 300
+        }
+    },
+    "level_transcendent_400": {
+        "name": "🌈 Transcendent (LVL 400)",
+        "description": "Reach Level 400.",
+        "hidden": true,
+        "criteria": {
+            "level": 400
+        }
+    },
+    "level_eternal_500": {
+        "name": "👑 ETERNAL (LVL 500)",
+        "description": "Reach Level 500.",
+        "hidden": true,
+        "criteria": {
+            "level": 500
+        }
+    },
+    "level_ascended_600": {
+        "name": "🚀 Ascended (LVL 600)",
+        "description": "Reach Level 600.",
+        "hidden": true,
+        "criteria": {
+            "level": 600
+        }
+    },
+    "level_isthismaxlevel_700": {
+        "name": "👑 Is This Max Level? (LVL 700)",
+        "description": "Reach Level 700.",
+        "hidden": true,
+        "criteria": {
+            "level": 700
+        }
+    },
+    "level_immortality_achieved_1000": {
+        "name": "🏆 IMMORALITY ACHIEVED (LVL 1000)",
+        "description": "Reach Level 1000. I hope you're aware that there's no limit, by the way! 🚀",
+        "hidden": true,
+        "criteria": {
+            "level": 1000
+        }
+    },
+    "fights_loser": {
+        "name": "🙁 Consolation Prize",
+        "description": "Lose your first fight.",
+        "hidden": false,
+        "criteria": {
+            "fights_lost": 1
+        }
+    },
+    "fights_beginner": {
+        "name": "😬 Beginner's Luck",
+        "description": "Lose 5 fights.",
+        "hidden": false,
+        "criteria": {
+            "fights_lost": 5
+        }
+    },
+    "fights_veteran": {
+        "name": "😓 Battle-Tested Veteran",
+        "description": "Lose 25 fights.",
+        "hidden": false,
+        "criteria": {
+            "fights_lost": 25
+        }
+    },
+    "fights_struggler": {
+        "name": "😥 Perpetual Struggler",
+        "description": "Lose 50 fights.",
+        "hidden": false,
+        "criteria": {
+            "fights_lost": 50
+        }
+    },
+    "fights_defeated_100": {
+        "name": "🚀 ULTIMATE MASTER OF LOSS",
+        "description": "Lose 100 fights.",
+        "hidden": true,
+        "criteria": {
+            "fights_lost": 100
+        }
+    },
+    "gold_accumulator": {
+        "name": "💰 Gold Accumulator",
+        "description": "Collect 500 Gold.",
+        "hidden": false,
+        "criteria": {
+            "gold": 500
+        }
+    },
+    "gold_millionaire": {
+        "name": "🤑 Gold Millionaire",
+        "description": "Collect 1 Million Gold.",
+        "hidden": false,
+        "criteria": {
+            "gold": 1000000
+        }
+    },
+    "gold_billionaire": {
+        "name": "🌌 Gold Billionaire",
+        "description": "Collect 1 Billion Gold.",
+        "hidden": true,
+        "criteria": {
+            "gold": 1000000000
+        }
+    },
+    "gold_golden_touch": {
+        "name": "✨ Golden Touch",
+        "description": "Collect 5 Billion Gold. Everything you touch turns to gold!",
+        "hidden": true,
+        "criteria": {
+            "gold": 5000000000
+        }
+    },
+    "gold_golden_empire": {
+        "name": "🏰 Golden Empire",
+        "description": "Collect 100 Billion Gold. Build your golden empire!",
+        "hidden": true,
+        "criteria": {
+            "gold": 100000000000
+        }
+    },
+    "gold_golden_age": {
+        "name": "🌅 Golden Age",
+        "description": "Collect 500 Billion Gold. Enter the golden age!",
+        "hidden": true,
+        "criteria": {
+            "gold": 500000000000
+        }
+    },
+    "gold_infinite_wealth": {
+        "name": "🚀 ULTIMATE INFINITE WEALTH",
+        "description": "Collect 1 Trillion Gold. Is there a limit to your wealth?",
+        "hidden": true,
+        "criteria": {
+            "gold": 1000000000000
+        }
+    },
+    "gold_integer_limit": {
+        "name": "💰 GOLD LIMIT BRAKER",
+        "description": "WHAT?! You just smashed through the 64-bit limit, becoming the true master of gold—a limit breaker!",
+        "hidden": true,
+        "criteria": {
+            "gold": 9223372036854775807
+        }
+    },
+    "secret_achievement": {
+        "name": "🤫 EZ",
+        "description": "WHAT?!",
+        "hidden": false,
+        "criteria": {
+            "secret": 123
+        }
+    }
+}
