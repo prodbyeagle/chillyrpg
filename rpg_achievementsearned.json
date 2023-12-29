@@ -8,21 +8,5 @@
         "level_divine_90",
         "level_max_level_100",
         "level_senior_200"
-    ],
-    "prodbyeagle": [
-        "level_novice_1",
-        "gold_accumulator",
-        "level_apprentice_10",
-        "level_master_50",
-        "level_mythical_70",
-        "level_divine_90",
-        "level_max_level_100",
-        "level_senior_200",
-        "level_grandmaster_300",
-        "level_transcendent_400",
-        "level_eternal_500",
-        "level_ascended_600",
-        "level_isthismaxlevel_700",
-        "level_immortality_achieved_1000"
     ]
 }

@@ -1589,9 +1589,11 @@ class SettingsView(nextcord.ui.View):
                         color=nextcord.Color.red()
                     )
                     await delete_request_channel.send(embed=delete_request_embed)
-                    await user.send("✅ Your Player + Achievements was Successfully Deleted")
+                    await user.send("✅ Your Player + Achievements was Successfully Deleted Use </start:1178729424854728744> to Start again!")
                 else:
-                    await user.send("❌ Delete request channel not found. Unable to process the request.")
+                    await user.send("❌ Delete request channel not found. Unable to process the request.")                    
+            else:
+                await user.send("❌ The Code was Incorrect. The Deletion was stopped!")                    
         except asyncio.TimeoutError:
             await interaction.response.followup.send("❌ 30 Seconds are Over!. Action canceled.")
 
@@ -3875,12 +3877,15 @@ async def fight(ctx, opponent: nextcord.Member):
 # -------------
 # PET SYSTEM
 class Pet:
-    def __init__(self, name, rarity, level=1, xp_bonus=0, gold_bonus=0):
+    def __init__(self, name, rarity, level=1, xp_bonus=0, gold_bonus=0,clicker_bonus=0,fish_bonus=0,fight_bonus=0):
         self.name = name
         self.rarity = rarity
         self.level = level
         self.xp_bonus = xp_bonus
         self.gold_bonus = gold_bonus
+        self.clicker_bonus = clicker_bonus
+        self.fish_bonus = fish_bonus
+        self.fight_bonus = fight_bonus
 
 def load_pet_data():
     with open('rpg_petdata.json', 'r') as file:
@@ -3893,8 +3898,11 @@ def create_random_pet(base_pet):
     level = 1
     xp_bonus = 1
     gold_bonus = 1
+    clicker_bonus = 1
+    fish_bonus = 1
+    fight_bonus = 1
 
-    return Pet(name, rarity, level, xp_bonus, gold_bonus)
+    return Pet(name, rarity, level, xp_bonus, gold_bonus, clicker_bonus, fish_bonus, fight_bonus)
 
 def update_pet_level_and_rarity(pet):
     if pet.level >= 250:
