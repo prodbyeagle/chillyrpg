@@ -55,7 +55,7 @@ UPDATE_PING_ROLE_ID = 1105649201578254358
 JOIN_COMMAND_ID = 928875861036400721
 OWNERS_CHANNEL_ID = 1121473246571798558
 
-RPC_DEFAULT_STATE = '✅ | BETA | 🦅'
+RPC_DEFAULT_STATE = '✅ | v0.6 | 🦅'
 RPC_DEVELOPER_STATE = '⚠️ | DEV | 🦅'
 RPC_UPDATE_STATE = '❌ | UPDATE | 🦅'
 
@@ -3864,7 +3864,6 @@ def update_pet_level_and_rarity(pet):
     elif pet.level >= 1:
         pet.rarity = 'Basic'
 
-
 # Pet Kauf System
 async def purchase_pet(player_name, pet_name):
     player_data = await load_player_data(player_name)
@@ -4005,37 +4004,75 @@ async def adoptpet(ctx):
 
     await ctx.send(embed=embed, view=view, ephemeral=True)
 
-# 🐅 /givepet
+# 🦍 /equippet
 @bot.slash_command(
-    name='givepet',
-    description='🐅 Give a Pet to a user!'
+    name='equippet',
+    description='🦍 Equip a Pet!'
 )
-@log_command('givepet')
-async def givepet(ctx, target_user: nextcord.Member, pet_name: str):
-    player_data = await load_player_data(ctx.user.name)
+@log_command('equippet')
+async def equippet(ctx, pet_name: str):
+    # Check if pet_name is None or an empty string
+    if pet_name is not None and pet_name.lower() != "none":
+        player_name = ctx.user.name
+        player_data = await load_player_data(player_name)
 
-    if pet_name in player_data.get('pets', {}):
-        pet_data = player_data['pets'][pet_name]
+        if "active_pets" not in player_data:
+            player_data["active_pets"] = {}
 
-        target_player_data = await load_player_data(target_user.name)
-        target_player_data['pets'][pet_name] = pet_data
+        if pet_name in player_data["pets"]:
+            if player_data["active_pets"]:
+                old_pet_name = next(iter(player_data["active_pets"]))
+                player_data["pets"][old_pet_name] = player_data["active_pets"].pop(old_pet_name)
+                embed = nextcord.Embed(
+                    title="✅ Equipped Pet!",
+                    description=f"Pet Equipped: {pet_name}",
+                    color=nextcord.Color.orange()
+                )
+                embed.set_footer(text=f"You've put back {old_pet_name}.")
+                await ctx.send(embed=embed)
 
-        await save_player_data(target_user.name, target_player_data)
+            player_data["active_pets"][pet_name] = player_data["pets"].pop(pet_name)
+            await save_player_data(player_name, player_data)
 
-        embed = nextcord.Embed(
-            title="✅ Pet Given Successfully",
-            description=f"You've given {pet_name} to {target_user.display_name}!",
-            color=nextcord.Color.green()
-        )
-        await ctx.send(embed=embed, ephemeral=True)
+            embed = nextcord.Embed(
+                title="Pet Equipped",
+                description=f"You've equipped {pet_name}!",
+                color=nextcord.Color.green()
+            )
+            await ctx.send(embed=embed)
+
+        else:
+            embed = nextcord.Embed(
+                title="Pet Not Found",
+                description=f"You don't have a pet named {pet_name}.",
+                color=nextcord.Color.red()
+            )
+            await ctx.send(embed=embed)
     else:
-        embed = nextcord.Embed(
-            title="❌ Error",
-            description=f"You don't have a pet named {pet_name} to give.",
-            color=nextcord.Color.red()
-        )
-        await ctx.send(embed=embed, ephemeral=True)
+        # Handle the case when the user provides None or an empty string
+        player_name = ctx.user.name
+        player_data = await load_player_data(player_name)
 
+        if "active_pets" in player_data and player_data["active_pets"]:
+            # If the user has an active pet, put it back to pets
+            old_pet_name = next(iter(player_data["active_pets"]))
+            player_data["pets"][old_pet_name] = player_data["active_pets"].pop(old_pet_name)
+            await save_player_data(player_name, player_data)
+
+            embed = nextcord.Embed(
+                title="✅ Equipped Pet!",
+                description=f"Pet Equipped: None",
+                color=nextcord.Color.orange()
+            )
+            embed.set_footer(text=f"You've put back {old_pet_name}.")
+            await ctx.send(embed=embed)
+        else:
+            embed = nextcord.Embed(
+                title="No Active Pet",
+                description="You don't have any active pet.",
+                color=nextcord.Color.orange()
+            )
+            await ctx.send(embed=embed)
 # -------------
 # ADMIN CMDS:
 
