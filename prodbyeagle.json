@@ -2,43 +2,67 @@
     "name": "prodbyeagle",
     "game_started": true,
     "xp_notification": true,
-    "1st_fish_gift": true,
-    "profile_visibility": false,
-    "level": 1279,
-    "mastery_points": 123121124,
-    "xp": 18436.0,
-    "gold": 13752.0,
+    "1st_fish_gift": false,
+    "profile_visibility": true,
+    "level": 8,
+    "mastery_points": 123119880,
+    "xp": 430,
+    "gold": 196640,
     "last_daily_claim": 0,
     "last_weekly_claim": 0,
     "last_monthly_claim": 0,
-    "last_fish_time": 1703725089.8828866,
+    "last_fish_time": 0,
     "last_quiz_attempt": 0,
-    "messages_sent": 116,
-    "clicks": 2886,
+    "messages_sent": 56,
+    "clicks": 0,
     "fights_won": 0,
     "fights_lost": 0,
     "completed_missions": 0,
     "active_missions": {},
-    "active_rod": {
-        "name": "Broken Fishing Rod"
-    },
-    "pets": {},
-    "inventory": {
-        "Broken Fishing Rod": {
-            "name": "Broken Fishing Rod",
-            "value": 10,
-            "rarity": "Basic",
-            "durability": 20,
-            "enchantments": [],
-            "amount": 1
+    "active_rod": {},
+    "active_pets": {},
+    "pets": {
+        "Shadow": {
+            "name": "Shadow",
+            "rarity": "Rare",
+            "level": 1,
+            "xp": 0,
+            "xp_bonus": 4,
+            "gold_bonus": 6,
+            "clicker_bonus": 0,
+            "fish_bonus": 0,
+            "fight_bonus": 0
+        },
+        "Frostbite": {
+            "name": "Frostbite",
+            "rarity": "Epic",
+            "level": 1,
+            "xp": 0,
+            "xp_bonus": 0,
+            "gold_bonus": 8,
+            "clicker_bonus": 0,
+            "fish_bonus": 4,
+            "fight_bonus": 0
+        },
+        "Blaze": {
+            "name": "Blaze",
+            "rarity": "Rare",
+            "level": 1,
+            "xp": 0,
+            "xp_bonus": 5,
+            "gold_bonus": 0,
+            "clicker_bonus": 2,
+            "fish_bonus": 0,
+            "fight_bonus": 0
         }
     },
+    "inventory": {},
     "masteries": {
         "More Clicks": {
             "name": "More Clicks",
             "description": "Allows you to get more Clicks in the Clicker Game.",
             "maxlevel": 10,
-            "current_level": 100,
+            "current_level": 1,
             "cost": 150
         },
         "Reduce Rewards Cooldown": {
@@ -52,7 +76,7 @@
             "name": "Reduce Fishing Cooldown",
             "description": "Reduces the cooldown time between fishing attempts.",
             "maxlevel": 5,
-            "current_level": 5,
+            "current_level": 1,
             "cost": 100
         },
         "Unlock /fish": {
