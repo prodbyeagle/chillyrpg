@@ -56,7 +56,7 @@ UPDATE_PING_ROLE_ID = 1105649201578254358
 JOIN_COMMAND_ID = 928875861036400721
 OWNERS_CHANNEL_ID = 1121473246571798558
 
-RPC_DEFAULT_STATE = '✅ | v0.9 | 🦅'
+RPC_DEFAULT_STATE = '✅ | v1 | 🦅'
 RPC_DEVELOPER_STATE = '⚠️ | DEV | 🦅'
 RPC_UPDATE_STATE = '❌ | UPDATE | 🦅'
 
@@ -872,6 +872,12 @@ async def rpgcommands(ctx):
     :envelope: `/claninvite [user]` - Invite Users to your clan.
     :hammer: `/clanban [user]` - Ban a user from your clan.
     :unlock: `/clanunban [user]` - Unban a user from your clan.
+    """, inline=False)
+
+    embed.add_field(name="**🐈 Pet Commands**", value="""
+    :dog: `/adoptpet` - Get yourself an Little Friend! (max 2 + 1 active)
+    :hatched_chick: `/equippet [petname]` - Equip 1 of Your Pets
+    :unicorn: `/petinfo [user]` - Get the Stats of all The Pets your want to see
     """, inline=False)
 
     embed.add_field(name="🕹️ Game Commands", value="""
@@ -3972,9 +3978,10 @@ class AdoptPetButton(nextcord.ui.Button):
         self.pet_data = pet_data
 
 class AdoptPetView(View):
-    def __init__(self, player_data, **kwargs):
+    def __init__(self, player_data, interaction, **kwargs):
         super().__init__(**kwargs)
         self.player_data = player_data
+        self.interaction = interaction
 
 async def adopt_pet_callback(interaction, button, player_data, selected_pet):
     pet_price = get_pet_price(selected_pet['name'])
@@ -4044,28 +4051,19 @@ async def adoptpet(ctx):
     player_name = ctx.user.name
     player_data = await load_player_data(player_name)
     pets_data = load_pet_data()
-    view = AdoptPetView(player_data)
+    view = AdoptPetView(player_data, ctx)
     embed = nextcord.Embed(title="🐇 Adopt a New Pet", description="Choose a pet to adopt!")
 
     if player_data is None or not player_data:
         embed = nextcord.Embed(
-        title="**`❌ You don't have an active profile!`** </start:1178729424854728744> **`to Start`**",
-        color=nextcord.Color.red()
-        )
-        embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
-        await ctx.send(embed=embed)
-        return
-
-    if player_data is player_data.bot:
-        embed = nextcord.Embed(
-            title="**`❌ Bots don't have pets!`**",
+            title="**`❌ You don't have an active profile!`** </start:1178729424854728744> **`to Start`**",
             color=nextcord.Color.red()
         )
         embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
         await ctx.send(embed=embed)
         return
 
-    for pet in pets_data:
+    for pet in pets_data[:6]:
         embed.add_field(
             name=f"{pet['name']} ({pet['rarity']})", 
             value=f"Price: {pet.get('price', 0)} gold",
@@ -4078,12 +4076,12 @@ async def adoptpet(ctx):
 
         view.add_item(button)
 
-    await ctx.send(embed=embed, view=view)
+    await ctx.send(embed=embed, view=view, ephemeral=True)
 
-# 🦍 /equippet
+# 🐣 /equippet
 @bot.slash_command(
     name='equippet',
-    description='🦍 Equip a Pet!'
+    description='🐣 Equip a Pet!'
 )
 @log_command('equippet')
 async def equippet(ctx, pet_name: str):
@@ -4155,10 +4153,10 @@ async def equippet(ctx, pet_name: str):
             )
             await ctx.send(embed=embed)
 
-# 🐾 /petinfo
+# 🦄 /petinfo
 @bot.slash_command(
     name='petinfo',
-    description='🐾 View information about pets for a user.'
+    description='🦄 View information about pets for a user.'
 )
 @log_command('petinfo')
 async def petinfo(ctx, user: nextcord.Member):
@@ -4243,129 +4241,6 @@ async def petinfo(ctx, user: nextcord.Member):
         await ctx.send(embed=embed)
     else:
         await ctx.send(f"No pet data found for {user.display_name}.", ephemeral=True)
-
-class AFKFarmCog(commands.Cog):
-    def __init__(self, bot):
-        self.bot = bot
-        self.current_guild_index = 0
-        self.afk_farm.start()
-
-    async def get_afk_rewards(self, user):
-        afk_xp = random.randint(1, 10)
-        afk_gold = random.randint(5, 20)
-
-        return afk_xp, afk_gold
-
-    async def has_active_pet(self, user):
-        player_data = await load_player_data(user.name)
-        active_pets = player_data.get('active_pets', {})
-        return bool(active_pets)
-
-    @tasks.loop(seconds=1, reconnect=True)
-    async def afk_farm(self):
-        guild = self.bot.guilds[self.current_guild_index]
-        
-        all_player_names = await get_all_player_names()
-        collected_rewards = {}
-        
-        for user_name in all_player_names:
-            user = guild.get_member_named(user_name)
-        
-            if user and user.status in [nextcord.Status.offline, nextcord.Status.idle] and await self.has_active_pet(user):
-                afk_xp, afk_gold = await self.get_afk_rewards(user)
-                player_data = await load_player_data(user_name)
-        
-                total_afk_gold = player_data["collected_rewards"]["gold"] + afk_gold
-                total_afk_xp = player_data["collected_rewards"]["xp"] + afk_xp
-        
-                player_data["collected_rewards"]["gold"] = total_afk_gold
-                player_data["collected_rewards"]["xp"] = total_afk_xp
-        
-                print(f"{user.name} im AFK-Modus")
-                await save_player_data(user_name, player_data)
-        
-                collected_rewards[user_name] = {"xp": afk_xp, "gold": afk_gold}
-        
-        self.current_guild_index = (self.current_guild_index + 1) % len(self.bot.guilds)
-        
-        for user_name, rewards in collected_rewards.items():
-            total_afk_xp = rewards["xp"]
-            total_afk_gold = rewards["gold"]
-        
-            user = guild.get_member_named(user_name)
-        
-            if user and user.status == nextcord.Status.online and await self.has_active_pet(user):
-                print(f"User {user.name} ist wieder online. AFK-Modus beendet.")
-                afk_user = await bot.fetch_user(user.id)
-            
-                embed = nextcord.Embed(
-                    title=f"Willkommen zurück, {afk_user}!",
-                    description="Hier ist deine AFK-Farming-Bilanz:",
-                    color=0x00FF00
-                )
-                embed.add_field(name="XP", value=total_afk_xp, inline=True)
-                embed.add_field(name="Gold", value=total_afk_gold, inline=True)
-            
-                await afk_user.send(embed=embed)
-            
-                rewards["xp"] = 0
-                rewards["gold"] = 0
-
-    @afk_farm.before_loop
-    async def before_afk_farm(self):
-        await self.bot.wait_until_ready()
-        print("😴 AFK Farming Loop gestartet.")
-
-# 😴 /startafk
-@bot.slash_command(
-    name='startafk',
-    description='😴 Start the AFK System!'
-)
-@log_command('startafk')
-async def startafk(ctx):
-    afk_cog = AFKFarmCog(bot)
-    bot.add_cog(afk_cog)
-    await ctx.send("AFK Farming wurde gestartet!", ephemeral=True) 
-
-# 🙂 /stopafk
-@bot.slash_command(
-    name='stopafk',
-    description='🙂 Stop the AFK System!'
-)
-@log_command('stopafk')
-async def stopafk(ctx):
-    afk_cog = None
-    for cog in bot.cogs.values():
-        if isinstance(cog, AFKFarmCog):
-            afk_cog = cog
-            break
-
-    if afk_cog:
-        bot.remove_cog(afk_cog)
-        await ctx.send("AFK Farming wurde gestoppt!", ephemeral=True)
-    else:
-        await ctx.send("AFK Farming wurde nicht gefunden. Es läuft möglicherweise nicht.", ephemeral=True)
-
-@bot.slash_command(
-    name='checkstatus',
-    description='check_status desc'
-)
-@log_command('checkstatus')
-async def check_status(ctx, member: nextcord.Member = None):
-    if member is None:
-        member = ctx.user
-
-    if member.status == nextcord.Status.online:
-        status_message = f"{member.display_name} ist online!"
-    elif member.status == nextcord.Status.idle:
-        status_message = f"{member.display_name} ist abwesend."
-    elif member.status == nextcord.Status.dnd:
-        status_message = f"{member.display_name} möchte nicht gestört werden."
-    else:
-        status_message = f"{member.display_name} ist offline."
-
-    await ctx.send(status_message)
-
 # -------------
 # ADMIN CMDS:
 
@@ -5252,7 +5127,7 @@ async def on_message(message):
                 achievement_embed = nextcord.Embed(
                     title=f"🎊 ACHIEVEMENT UNLOCKED",
                     description=f"<@{message.author.id}>, you've achieved the `{achievement_data['name']}` ACHIEVEMENT!",
-                    color=nextcord.Color.gold()
+                    color=nextcord.Color.dark_green()
                 )
                 achievement_embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
                 await message.author.send(embed=achievement_embed)
@@ -5279,7 +5154,7 @@ async def on_message(message):
                 achievement_embed = nextcord.Embed(
                     title=f"🎊 ACHIEVEMENT UNLOCKED",
                     description=f"<@{message.author.id}>, you've achieved the `{achievement_data['name']}` ACHIEVEMENT!",
-                    color=nextcord.Color.gold()
+                    color=nextcord.Color.dark_green()
                 )
                 achievement_embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
                 await message.author.send(embed=achievement_embed)
@@ -5306,7 +5181,7 @@ async def on_message(message):
                 achievement_embed = nextcord.Embed(
                     title=f"🎊 ACHIEVEMENT UNLOCKED",
                     description=f"<@{message.author.id}>, you've achieved the `{achievement_data['name']}` ACHIEVEMENT!",
-                    color=nextcord.Color.gold()
+                    color=nextcord.Color.dark_green()
                 )
                 achievement_embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
                 await message.author.send(embed=achievement_embed)
@@ -5333,7 +5208,7 @@ async def on_message(message):
                 achievement_embed = nextcord.Embed(
                     title=f"🎊 ACHIEVEMENT UNLOCKED",
                     description=f"<@{message.author.id}>, you've achieved the `{achievement_data['name']}` ACHIEVEMENT!",
-                    color=nextcord.Color.gold()
+                    color=nextcord.Color.dark_green()
                 )
                 achievement_embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
                 await message.author.send(embed=achievement_embed)
@@ -5360,7 +5235,7 @@ async def on_message(message):
                 achievement_embed = nextcord.Embed(
                     title=f"🎊 ACHIEVEMENT UNLOCKED",
                     description=f"<@{message.author.id}>, you've achieved the `{achievement_data['name']}` ACHIEVEMENT!",
-                    color=nextcord.Color.gold()
+                    color=nextcord.Color.dark_green()
                 )
                 achievement_embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
                 await message.author.send(embed=achievement_embed)
