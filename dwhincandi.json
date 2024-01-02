@@ -4,23 +4,35 @@
     "xp_notification": true,
     "1st_fish_gift": false,
     "profile_visibility": true,
-    "level": 1,
-    "mastery_points": 0,
-    "xp": 0,
-    "gold": 10000,
+    "level": 4,
+    "mastery_points": 3,
+    "xp": 158,
+    "gold": 3960,
     "last_daily_claim": 0,
     "last_weekly_claim": 0,
     "last_monthly_claim": 0,
     "last_fish_time": 0,
     "last_quiz_attempt": 0,
-    "messages_sent": 0,
+    "messages_sent": 22,
     "clicks": 0,
     "fights_won": 0,
     "fights_lost": 0,
     "completed_missions": 0,
     "active_missions": {},
     "active_rod": {},
-    "pets": {},
+    "pets": {
+        "Blaze": {
+            "name": "Blaze",
+            "rarity": "Rare",
+            "level": 1,
+            "xp": 0,
+            "xp_bonus": 3,
+            "gold_bonus": 0,
+            "clicker_bonus": 0,
+            "fish_bonus": 2,
+            "fight_bonus": 0
+        }
+    },
     "inventory": {},
     "masteries": {
         "More Clicks": {
@@ -65,5 +77,19 @@
             "current_level": 0,
             "cost": 750
         }
-    }
+    },
+    "active_pets": {
+        "Aurora": {
+            "name": "Aurora",
+            "rarity": "Epic",
+            "level": 1,
+            "xp": 8,
+            "xp_bonus": 2,
+            "gold_bonus": 0,
+            "clicker_bonus": 2,
+            "fish_bonus": 0,
+            "fight_bonus": 0
+        }
+    },
+    "pet_points": 1
 }

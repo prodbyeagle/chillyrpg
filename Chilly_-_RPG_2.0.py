@@ -95,6 +95,13 @@ async def on_ready():
     print('---------------------------------------------------------') 
     await check_and_start_weekend_boost()
 
+@bot.event
+async def on_member_update(before, after):
+    if str(before.status) == "online":
+        if str(after.status) == "offline" or "idle":
+            print(f"status changed")
+            pass
+
 async def set_rich_presence(state):
     activity = nextcord.Activity(type=nextcord.ActivityType.playing, name=state)
     await bot.change_presence(activity=activity)
@@ -105,6 +112,9 @@ async def get_all_player_names():
     data_folder = "C:/Users/heypa/rpg_botdata/"
 
     for filename in os.listdir(data_folder):
+        if filename.startswith("rpg_"):
+            continue
+
         if filename.endswith(".json"):
             player_name = filename[:-5]
             players.append(player_name)
@@ -171,8 +181,10 @@ def create_new_player(name):
         'fights_won': 0,
         'fights_lost': 0,
         'completed_missions': 0,
+        'pet_points': 0,
         'active_missions': {},
         'active_rod': {},
+        'active_pets': {},
         'pets': {},
         'inventory': {},
         'masteries': {
@@ -4011,7 +4023,6 @@ async def adoptpet(ctx):
 )
 @log_command('equippet')
 async def equippet(ctx, pet_name: str):
-    # Check if pet_name is None or an empty string
     if pet_name is not None and pet_name.lower() != "none":
         player_name = ctx.user.name
         player_data = await load_player_data(player_name)
@@ -4049,12 +4060,12 @@ async def equippet(ctx, pet_name: str):
             )
             await ctx.send(embed=embed)
     else:
-        # Handle the case when the user provides None or an empty string
+
         player_name = ctx.user.name
         player_data = await load_player_data(player_name)
 
         if "active_pets" in player_data and player_data["active_pets"]:
-            # If the user has an active pet, put it back to pets
+
             old_pet_name = next(iter(player_data["active_pets"]))
             player_data["pets"][old_pet_name] = player_data["active_pets"].pop(old_pet_name)
             await save_player_data(player_name, player_data)
@@ -4073,6 +4084,73 @@ async def equippet(ctx, pet_name: str):
                 color=nextcord.Color.orange()
             )
             await ctx.send(embed=embed)
+
+AFK_XP_BASE = 5
+AFK_GOLD_BASE = 10
+AFK_FARM_INTERVAL = 1
+PET_POINT_CHANCE = 0.05
+
+# 🦍 /afk
+@bot.slash_command(
+    name='afk',
+    description='AFK Test'
+)
+@log_command('afk')
+async def afk_rewards_task(self):
+    all_users = await get_all_player_names()
+
+    for player_name in all_users:
+        player = nextcord.Guild.fetch_members(self)
+        print(f"{player}")
+
+        if player.status in [nextcord.Status.offline, nextcord.Status.idle]:
+            print(f"{player.name} started AFK farming.")
+
+            player_data = await load_player_data(player_name)
+
+            total_xp = AFK_XP_BASE
+            total_gold = AFK_GOLD_BASE
+            pet_point = 0
+
+            if "active_pets" in player_data:
+                for pet_name, pet_info in player_data["active_pets"].items():
+                    pet_level = pet_info["level"]
+                    xp_bonus = pet_info["xp_bonus"]
+                    gold_bonus = pet_info["gold_bonus"]
+                    cooldown_reduction = min(pet_level // 10, 5)
+
+                    xp_bonus *= min(pet_level, 8)
+                    gold_bonus *= min(pet_level, 8)
+
+                    cooldown = max(60 - cooldown_reduction * 10, 10)
+
+                    earned_xp = pet_level * xp_bonus
+                    earned_gold = pet_level * gold_bonus
+
+                    total_xp += earned_xp
+                    total_gold += earned_gold
+
+                    pet_info["xp"] += pet_level * 2
+
+                    if random.random() < PET_POINT_CHANCE:
+                        pet_point += 1
+
+                    print(f"{player_name}'s pet {pet_name} earned {earned_xp} XP and {earned_gold} Gold.")
+
+            else:
+                continue
+
+            player_data["xp"] += total_xp
+            player_data["gold"] += total_gold
+            player_data["pet_points"] = player_data.get("pet_points", 0) + pet_point
+
+            await save_player_data(player_name, player_data)
+
+            if player_name.status in [nextcord.Status.online]:
+                message = f"During your AFK time, your pets earned you {total_xp} XP and {total_gold} Gold."
+                if pet_point > 0:
+                    message += f"\nYou also received {pet_point} pet point(s)!"
+                await self.user.send(message)
 # -------------
 # ADMIN CMDS:
 

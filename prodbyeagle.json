@@ -4,35 +4,36 @@
     "xp_notification": true,
     "1st_fish_gift": false,
     "profile_visibility": true,
-    "level": 8,
-    "mastery_points": 123119880,
-    "xp": 430,
-    "gold": 196640,
+    "level": 12,
+    "mastery_points": 123119884,
+    "xp": 0,
+    "gold": 198764,
     "last_daily_claim": 0,
     "last_weekly_claim": 0,
     "last_monthly_claim": 0,
     "last_fish_time": 0,
     "last_quiz_attempt": 0,
-    "messages_sent": 56,
+    "messages_sent": 71,
     "clicks": 0,
     "fights_won": 0,
     "fights_lost": 0,
     "completed_missions": 0,
     "active_missions": {},
     "active_rod": {},
-    "active_pets": {},
-    "pets": {
+    "active_pets": {
         "Shadow": {
             "name": "Shadow",
             "rarity": "Rare",
             "level": 1,
-            "xp": 0,
+            "xp": 18,
             "xp_bonus": 4,
             "gold_bonus": 6,
             "clicker_bonus": 0,
             "fish_bonus": 0,
             "fight_bonus": 0
-        },
+        }
+    },
+    "pets": {
         "Frostbite": {
             "name": "Frostbite",
             "rarity": "Epic",
@@ -100,5 +101,6 @@
             "current_level": 1,
             "cost": 750
         }
-    }
+    },
+    "pet_points": 1
 }
