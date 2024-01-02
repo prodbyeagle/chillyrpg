@@ -95,13 +95,6 @@ async def on_ready():
     print('---------------------------------------------------------') 
     await check_and_start_weekend_boost()
 
-@bot.event
-async def on_member_update(before, after):
-    if str(before.status) == "online":
-        if str(after.status) == "offline" or "idle":
-            print(f"status changed")
-            pass
-
 async def set_rich_presence(state):
     activity = nextcord.Activity(type=nextcord.ActivityType.playing, name=state)
     await bot.change_presence(activity=activity)
@@ -2687,7 +2680,7 @@ async def additem(ctx, name: str, value: int, rarity: str = nextcord.SlashOption
             title=f"⚠️ The specified value exceeds the maximum gold value of **`{max_gold_value}`** gold. The value has been set to the limit of **`{max_gold_value}`**.",
             color=nextcord.Color.gold()
         )
-        embed.set_footer(text="❄️ | @prodbyeagle", icon_url=pic_link)
+        embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
         await ctx.send(embed=embed, ephemeral=True)
         return
 
@@ -2697,7 +2690,7 @@ async def additem(ctx, name: str, value: int, rarity: str = nextcord.SlashOption
             title=f"❌ An item with the name '{name}' already exists.",
             color=nextcord.Color.red()
         )
-        embed.set_footer(text="❄️ | @prodbyeagle", icon_url=pic_link)
+        embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
         await ctx.send(embed=embed, ephemeral=True)
         return
     else:
@@ -2712,7 +2705,7 @@ async def additem(ctx, name: str, value: int, rarity: str = nextcord.SlashOption
                     title=f"❌ Invalid enchantment '{enchantment}'.",
                     color=nextcord.Color.red()
                 )
-                embed.set_footer(text="❄️ | @prodbyeagle", icon_url=pic_link)
+                embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
                 await ctx.send(embed=embed, ephemeral=True)
                 return
 
@@ -2731,7 +2724,7 @@ async def additem(ctx, name: str, value: int, rarity: str = nextcord.SlashOption
         description=f"The item **`{name}`** has been successfully added with rarity **`{rarity}`**, gold value 🪙 **`{value}`**, durability **`{durability}`**.{enchantment_info}",
         color=rarity_color
     )
-    embed.set_footer(text="❄️ | @prodbyeagle", icon_url=pic_link)
+    embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
     await ctx.send(embed=embed, ephemeral=True)
 
 # 🔨 /testadditem  
@@ -3876,7 +3869,6 @@ def update_pet_level_and_rarity(pet):
     elif pet.level >= 1:
         pet.rarity = 'Basic'
 
-# Pet Kauf System
 async def purchase_pet(player_name, pet_name):
     player_data = await load_player_data(player_name)
     pet_data = load_pet_data()
@@ -4085,72 +4077,77 @@ async def equippet(ctx, pet_name: str):
             )
             await ctx.send(embed=embed)
 
-AFK_XP_BASE = 5
-AFK_GOLD_BASE = 10
-AFK_FARM_INTERVAL = 1
-PET_POINT_CHANCE = 0.05
-
-# 🦍 /afk
+# 🐾 /petinfo
 @bot.slash_command(
-    name='afk',
-    description='AFK Test'
+    name='petinfo',
+    description='🐾 View information about pets for a user.'
 )
-@log_command('afk')
-async def afk_rewards_task(self):
-    all_users = await get_all_player_names()
+@log_command('petinfo')
+async def petinfo(ctx, user: nextcord.Member):
+    player_name = user.name
+    player_data = await load_player_data(player_name)
 
-    for player_name in all_users:
-        player = nextcord.Guild.fetch_members(self)
-        print(f"{player}")
+    if not player_data.get('profile_visibility', True):
+        visibility_embed = nextcord.Embed(
+            title="❌ Profile is not visible",
+            description=f"The profile for {player_name} is set to private.",
+            color=nextcord.Color.red()
+        )
+        visibility_embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
+        await ctx.send(embed=visibility_embed, ephemeral=True)
+        return  
 
-        if player.status in [nextcord.Status.offline, nextcord.Status.idle]:
-            print(f"{player.name} started AFK farming.")
+    if "pets" in player_data:
+        embed = nextcord.Embed(
+            title=f"🐶 Pets from @{user.display_name}",
+            color=nextcord.Color.blue()
+        )
 
-            player_data = await load_player_data(player_name)
+        if player_data["pets"]:
+            pet_list = []
+            for pet_name, pet_info in player_data["pets"].items():
+                pet_stats = (
+                f"**{pet_name}** - **({pet_info['rarity']})**\nLevel: **{pet_info['level']}**\nXP: **{pet_info['xp']}**\nXP Bonus: **{pet_info['xp_bonus']}**"
+                )
 
-            total_xp = AFK_XP_BASE
-            total_gold = AFK_GOLD_BASE
-            pet_point = 0
+                if pet_info['gold_bonus'] > 0:
+                    pet_stats += f"\nGold Bonus: **{pet_info['gold_bonus']}**"
+                if pet_info['clicker_bonus'] > 0:
+                    pet_stats += f"\nClicker Bonus: **{pet_info['clicker_bonus']}**"
+                if pet_info['fish_bonus'] > 0:
+                    pet_stats += f"\nFish Bonus: **{pet_info['fish_bonus']}**"
+                if pet_info['fight_bonus'] > 0:
+                    pet_stats += f"\nFight Bonus: **{pet_info['fight_bonus']}**"
 
-            if "active_pets" in player_data:
-                for pet_name, pet_info in player_data["active_pets"].items():
-                    pet_level = pet_info["level"]
-                    xp_bonus = pet_info["xp_bonus"]
-                    gold_bonus = pet_info["gold_bonus"]
-                    cooldown_reduction = min(pet_level // 10, 5)
+                pet_list.append(pet_stats)
+                
+            embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
+            embed.add_field(name="📜 Owned Pets", value="\n\n".join(pet_list), inline=True)
 
-                    xp_bonus *= min(pet_level, 8)
-                    gold_bonus *= min(pet_level, 8)
+        if "active_pets" in player_data and player_data["active_pets"]:
+            active_pet_list = []
+            for pet_name, pet_info in player_data["active_pets"].items():
+                active_pet_stats = (
+                    f"**{pet_name}** - **({pet_info['rarity']})**"
+                )
+                active_pet_stats += f"\nLevel: **{pet_info['level']}**\nXP: **{pet_info['xp']}**\nXP Bonus: **{pet_info['xp_bonus']}**"
+                if pet_info['gold_bonus'] > 0:
+                    active_pet_stats += f"\nGold Bonus: **{pet_info['gold_bonus']}**"
+                if pet_info['clicker_bonus'] > 0:
+                    active_pet_stats += f"\nClicker Bonus: **{pet_info['clicker_bonus']}**"
+                if pet_info['fish_bonus'] > 0:
+                    active_pet_stats += f"\nFish Bonus: **{pet_info['fish_bonus']}**"
+                if pet_info['fight_bonus'] > 0:
+                    active_pet_stats += f"\nFight Bonus: **{pet_info['fight_bonus']}**"
 
-                    cooldown = max(60 - cooldown_reduction * 10, 10)
+                active_pet_list.append(active_pet_stats)
 
-                    earned_xp = pet_level * xp_bonus
-                    earned_gold = pet_level * gold_bonus
+            embed.add_field(name="✅ Active Pet", value="\n\n".join(active_pet_list), inline=True)
 
-                    total_xp += earned_xp
-                    total_gold += earned_gold
+        await ctx.send(embed=embed, ephemeral=True)
+    else:
+        await ctx.send(f"No pet data found for {user.display_name}.", ephemeral=True)
 
-                    pet_info["xp"] += pet_level * 2
-
-                    if random.random() < PET_POINT_CHANCE:
-                        pet_point += 1
-
-                    print(f"{player_name}'s pet {pet_name} earned {earned_xp} XP and {earned_gold} Gold.")
-
-            else:
-                continue
-
-            player_data["xp"] += total_xp
-            player_data["gold"] += total_gold
-            player_data["pet_points"] = player_data.get("pet_points", 0) + pet_point
-
-            await save_player_data(player_name, player_data)
-
-            if player_name.status in [nextcord.Status.online]:
-                message = f"During your AFK time, your pets earned you {total_xp} XP and {total_gold} Gold."
-                if pet_point > 0:
-                    message += f"\nYou also received {pet_point} pet point(s)!"
-                await self.user.send(message)
 # -------------
 # ADMIN CMDS:
 
