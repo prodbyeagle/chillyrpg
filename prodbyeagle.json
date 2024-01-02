@@ -4,103 +4,84 @@
     "xp_notification": true,
     "1st_fish_gift": false,
     "profile_visibility": true,
-    "level": 12,
-    "mastery_points": 123119884,
-    "xp": 60,
-    "gold": 198924,
+    "level": 1,
+    "mastery_points": 0,
+    "xp": 30,
+    "gold": 1600,
     "last_daily_claim": 0,
     "last_weekly_claim": 0,
     "last_monthly_claim": 0,
     "last_fish_time": 0,
     "last_quiz_attempt": 0,
-    "messages_sent": 72,
+    "messages_sent": 6,
     "clicks": 0,
     "fights_won": 0,
     "fights_lost": 0,
     "completed_missions": 0,
+    "pet_points": 0,
     "active_missions": {},
+    "collected_rewards": {
+        "xp": 0,
+        "gold": 0
+    },
     "active_rod": {},
     "active_pets": {
-        "Shadow": {
-            "name": "Shadow",
-            "rarity": "Rare",
-            "level": 1,
-            "xp": 18,
-            "xp_bonus": 4,
-            "gold_bonus": 6,
-            "clicker_bonus": 0,
-            "fish_bonus": 0,
-            "fight_bonus": 0
-        }
-    },
-    "pets": {
-        "Frostbite": {
-            "name": "Frostbite",
-            "rarity": "Epic",
-            "level": 1,
-            "xp": 0,
-            "xp_bonus": 0,
-            "gold_bonus": 8,
-            "clicker_bonus": 0,
-            "fish_bonus": 4,
-            "fight_bonus": 0
-        },
         "Blaze": {
             "name": "Blaze",
             "rarity": "Rare",
             "level": 1,
             "xp": 0,
-            "xp_bonus": 5,
+            "xp_bonus": 3,
             "gold_bonus": 0,
-            "clicker_bonus": 2,
+            "clicker_bonus": 0,
             "fish_bonus": 0,
-            "fight_bonus": 0
+            "fight_bonus": 1
         }
     },
+    "pets": {},
     "inventory": {},
     "masteries": {
         "More Clicks": {
             "name": "More Clicks",
             "description": "Allows you to get more Clicks in the Clicker Game.",
             "maxlevel": 10,
-            "current_level": 1,
+            "current_level": 0,
             "cost": 150
         },
         "Reduce Rewards Cooldown": {
             "name": "Reduce Rewards Cooldown",
             "description": "By Getting this Upgrade you can decrease the Time between the daily, weekly, monthly cooldown..",
             "maxlevel": 5,
-            "current_level": 1,
+            "current_level": 0,
             "cost": 200
         },
         "Reduce Fishing Cooldown": {
             "name": "Reduce Fishing Cooldown",
             "description": "Reduces the cooldown time between fishing attempts.",
             "maxlevel": 5,
-            "current_level": 1,
+            "current_level": 0,
             "cost": 100
         },
         "Unlock /fish": {
             "name": "Unlock /fish",
             "description": "Get the /fish and Fish everyday hour an Item!",
             "maxlevel": 1,
-            "current_level": 1,
+            "current_level": 0,
             "cost": 550
         },
         "Unlock /monthly": {
             "name": "Unlock /monthly",
             "description": "Unlock monthly rewards! Gain a random amount of XP and Gold to power up your medieval journey.",
             "maxlevel": 1,
-            "current_level": 1,
+            "current_level": 0,
             "cost": 1500
         },
         "Unlock /weekly": {
             "name": "Unlock /weekly",
             "description": "Unlock weekly rewards! Gain a random amount of XP and Gold to power up your medieval journey.",
             "maxlevel": 1,
-            "current_level": 1,
+            "current_level": 0,
             "cost": 750
         }
-    },
-    "pet_points": 1
+    }
 }

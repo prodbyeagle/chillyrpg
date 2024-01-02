@@ -55,6 +55,7 @@ ACTIVE_UPDATE_ROLE_ID = 1188241227485827252
 UPDATE_PING_ROLE_ID = 1105649201578254358
 JOIN_COMMAND_ID = 928875861036400721
 OWNERS_CHANNEL_ID = 1121473246571798558
+CLAN_RANK = 1160662906459914383
 
 RPC_DEFAULT_STATE = '✅ | v1 | 🦅'
 RPC_DEVELOPER_STATE = '⚠️ | DEV | 🦅'
@@ -2240,9 +2241,15 @@ class InviteConfirmationView(nextcord.ui.View):
                     member_role_id = clan_info.get('member_role_id')
                     if member_role_id:
                         member_role = guild.get_role(member_role_id)
-    
+                        clan_rank_id = CLAN_RANK
+                        clan_rank = guild.get_role(clan_rank_id)
+
+                        if not clan_rank:
+                            await self.user.add_roles(clan_rank)
+                            
                     if member_role:
                         await self.user.add_roles(member_role)
+                        has_clan_rank = any(role.id == CLAN_RANK for role in self.user.roles)
                         embed = nextcord.Embed(
                             title='✅ Success',
                             description=f'You have joined the clan **`{self.clan_name}`**. The role **`{member_role.name}`** has been assigned to you.',
