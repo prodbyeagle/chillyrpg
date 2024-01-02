@@ -55,7 +55,7 @@ UPDATE_PING_ROLE_ID = 1105649201578254358
 JOIN_COMMAND_ID = 928875861036400721
 OWNERS_CHANNEL_ID = 1121473246571798558
 
-RPC_DEFAULT_STATE = '✅ | v0.6 | 🦅'
+RPC_DEFAULT_STATE = '✅ | v0.9 | 🦅'
 RPC_DEVELOPER_STATE = '⚠️ | DEV | 🦅'
 RPC_UPDATE_STATE = '❌ | UPDATE | 🦅'
 
@@ -3146,7 +3146,7 @@ class FishingView(View):
             caught_item = None
             can_fish = random.random()
             
-            if can_fish < 0.5:
+            if can_fish < 0.8:
                 caught_item = random.choice(load_items())
 
                 while caught_item is None:
@@ -3174,9 +3174,15 @@ class FishingView(View):
                             fortune_enchantment = enchantment
                             break
     
+                    active_pets_data = player_data.get('active_pets', {})
+                    fish_bonus = 0
+                
+                    for pet_name, pet_info in active_pets_data.items():
+                        fish_bonus += active_pets_data[pet_name].get("fish_bonus", 0)
+                    
                     if fortune_enchantment:
                         for rarity, chance in chances[used_rod].items():
-                            chances[used_rod][rarity] += fortune_enchantment.get("level") * 5
+                            chances[used_rod][rarity] += fortune_enchantment.get("level") * 5 + fish_bonus
     
                     if caught_item:
                         item_name = caught_item.name
@@ -3455,8 +3461,33 @@ class FightView(View):
         super().__init__()
         self.player1 = player1
         self.player2 = player2
-        self.lives1 = 150
-        self.lives2 = 150
+
+        player_one_data_path = f"{player1.name}.json"
+        player_two_data_path = f"{player2.name}.json"
+
+        with open(player_one_data_path, "r") as file:
+            player_one_data = json.load(file)
+
+        with open(player_two_data_path, "r") as file:
+            player_two_data = json.load(file)
+
+        active_pets_data1 = player_one_data.get('active_pets', {})
+        active_pets_data2 = player_two_data.get('active_pets', {})
+
+        fight_bonus_player1 = 0
+        fight_bonus_player2 = 0
+
+        for pet_name, pet_info in active_pets_data1.items():
+            fight_bonus_player1 += pet_info.get("fight_bonus", 0)
+
+        for pet_name, pet_info in active_pets_data2.items():
+            fight_bonus_player2 += pet_info.get("fight_bonus", 0)
+
+        pet_start_health_player1 = fight_bonus_player1
+        pet_start_health_player2 = fight_bonus_player2
+
+        self.lives1 = 150 + pet_start_health_player1
+        self.lives2 = 150 + pet_start_health_player2
         self.can_attack = self.player2.id
         self.game_over = False
 
@@ -3584,8 +3615,14 @@ class FightView(View):
     @nextcord.ui.button(label="🗡️ Attack", style=nextcord.ButtonStyle.red, custom_id="attack")
     async def attack(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         if self.can_attack == interaction.user.id:
+            player1_data = await load_player_data(str(self.player1.name))
+            player2_data = await load_player_data(str(self.player2.name))
+            fight_bonus_player1 = player1_data.get('fight_bonus', 0)
+            fight_bonus_player2 = player2_data.get('fight_bonus', 0)
+
+        if self.can_attack == interaction.user.id:
             if random.random() < 0.5:
-                damage = 120
+                damage = 120 + fight_bonus_player1
                 if self.can_attack == self.player1.id:
                     self.lives2 = max(0, self.lives2 - damage)
                 else:
@@ -3597,7 +3634,7 @@ class FightView(View):
                 ]
                 await self.send_success_message(interaction, success_messages)
             else:
-                damage = 6
+                damage = 6 + fight_bonus_player2
                 if self.can_attack == self.player1.id:
                     self.lives1 = max(0, self.lives1 - damage)
                 else:
@@ -3628,16 +3665,20 @@ class FightView(View):
 
     @nextcord.ui.button(label="🛡️ Block", style=nextcord.ButtonStyle.blurple, custom_id="block")
     async def block(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        player1_data = await load_player_data(str(self.player1.name))
+        player2_data = await load_player_data(str(self.player2.name))
+        fight_bonus_player1 = player1_data.get('fight_bonus', 0)
+        fight_bonus_player2 = player2_data.get('fight_bonus', 0)
         if self.can_attack == interaction.user.id:
             if random.random() < 0.3:
-                block_value = 2
+                block_value = 2 + fight_bonus_player1
                 success_messages = [
                     "**`Perfect block with your shield! Your shield taunted your opponent. 🥴`**",
                     "**`Your expert block made your opponent question their life choices. 😵‍💫`**",
                     "**`Your opponent's attack had no effect on you. Your shield taunted them. 😴`**"
                 ]
             else:
-                block_value = -3
+                block_value = -3 + fight_bonus_player2
                 failure_messages = [
                     "**`Your casual wave of a block didn't stop the attack! 🌊`**",
                     "**`Your block didn't work, and your shield is on vacation. 🏞️`**",
@@ -3667,9 +3708,13 @@ class FightView(View):
     
     @nextcord.ui.button(label="🦶🏻 Kick", style=nextcord.ButtonStyle.green, custom_id="kick")
     async def kick(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
+        player1_data = await load_player_data(str(self.player1.name))
+        player2_data = await load_player_data(str(self.player2.name))
+        fight_bonus_player1 = player1_data.get('fight_bonus', 0)
+        fight_bonus_player2 = player2_data.get('fight_bonus', 0)
         if self.can_attack == interaction.user.id:
             if random.random() < 0.20:
-                damage = 120
+                damage = 120 + fight_bonus_player1
                 if self.can_attack == self.player1.id:
                     self.lives2 = max(0, self.lives2 - damage)
                 else:
@@ -3681,7 +3726,7 @@ class FightView(View):
                 ]
                 await self.send_success_message(interaction, success_messages)
             else:
-                damage = 20
+                damage = 20 + fight_bonus_player2
                 if self.can_attack == self.player1.id:
                     self.lives1 = max(0, self.lives1 - damage)
                 else:
@@ -3714,9 +3759,9 @@ class FightView(View):
         if self.can_attack == interaction.user.id:
             heal_amount = random.randint(5, 15)
             if self.can_attack == self.player1.id:
-                self.lives1 += heal_amount
+                self.lives1 = min(100, self.lives1 + heal_amount)
             else:
-                self.lives2 += heal_amount
+                self.lives2 = min(100, self.lives2 + heal_amount)
             if self.game_over:
                 await self.update_game(interaction)
                 self.game_over = True    
@@ -3806,7 +3851,7 @@ async def fight(ctx, opponent: nextcord.Member):
 
     view = FightView(player1, player2)
 
-    fight_start_embed = nextcord.Embed(title=f'{player2.name} 1st Hit', description="**`Choose your first hit or block...`**\n\n⚠️ Currently is the Ending Embed broken but the Game works. Just without seeing an Winner Embed. But you will clearly see the winner lol.`**", color=0xFFA500)
+    fight_start_embed = nextcord.Embed(title=f'{player2.name} 1st Hit', description="**`Choose your first Attack!`**", color=0xFFA500)
     fight_start_embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
 
     try:
@@ -4197,6 +4242,36 @@ async def petinfo(ctx, user: nextcord.Member):
     else:
         await ctx.send(f"No pet data found for {user.display_name}.", ephemeral=True)
 
+class AFKFarmCog(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    async def get_afk_rewards(self, user):
+        xp_earned = random.randint(1, 10)
+        gold_earned = random.randint(5, 20)
+
+        return xp_earned, gold_earned
+
+    async def afk_farm(self):
+        while True:
+                    for guild in self.bot.guilds:
+                        print(f"🤠 Checking members in Guild: {guild.name}")
+            
+                        for member in guild.members:
+                            if member.status in [nextcord.Status.offline, nextcord.Status.idle]:
+                                xp_earned, gold_earned = await self.get_afk_rewards(member)
+            
+                                player_data = await load_player_data(member.name)
+                                player_data["xp"] += xp_earned
+                                player_data["gold"] += gold_earned
+                                await save_player_data(member.name, player_data)
+            
+                                user_dm_channel = await member.create_dm()
+                                await user_dm_channel.send(f"Du hast {xp_earned} XP und {gold_earned} Gold im AFK-Modus verdient!")
+            
+                                print(f"{member.name} ist jetzt AFK in Guild: {guild.name}")
+
+                    await asyncio.sleep(10)
 # -------------
 # ADMIN CMDS:
 
@@ -4363,7 +4438,7 @@ async def event_expired_notification(ctx, boost_type):
 
 def is_weekend():
     current_day = datetime.datetime.utcnow().weekday()
-    return current_day in [1, 2, 3, 4, 5, 6]
+    return current_day in [5, 6]
 
 async def check_and_start_weekend_boost():
     global xp_multiplier, gold_multiplier, event_duration_seconds
@@ -4373,21 +4448,23 @@ async def check_and_start_weekend_boost():
 
         if is_weekend():
             boost_type = random.choice(['xp', 'gold'])
-
+        
             if boost_type == 'xp':
                 xp_multiplier = 6
-                gold_multiplier = 8
+                gold_multiplier = 0
+                boost_type_multiplier = xp_multiplier
             else:
                 gold_multiplier = 8
-                xp_multiplier = 6
-
+                xp_multiplier = 0
+                boost_type_multiplier = gold_multiplier
+        
             channel = bot.get_channel(EVENT_CHANNEL_ID)
             role = channel.guild.get_role(BOOSTERPING_ROLE_ID)
-
+        
             embed = nextcord.Embed(
                 title="😎 Weekend Booster Started!",
                 description=f"{role.mention}, the weekend booster has been started!\n\n"
-                            f"**▪︎ Multiplier Type:** **`{boost_type}`**\n **▪ Multiplier:** **`{xp_multiplier}x`**",
+                            f"**▪︎ Multiplier Type:** **`{boost_type}`**\n **▪ Multiplier:** **`{boost_type_multiplier}x`**",
                 color=nextcord.Color.gold()
             )
             embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
@@ -5008,8 +5085,17 @@ async def on_message(message):
     if 'xp' not in user_data:
         user_data['xp'] = 0
 
-    xp_earned = 10 * xp_multiplier
-    gold_earned = 20 * gold_multiplier
+    active_pets_data = user_data.get('active_pets', {})
+    
+    total_xp_bonus = 0
+    total_gold_bonus = 0
+    
+    for pet_name, pet_info in active_pets_data.items():
+        total_xp_bonus += pet_info.get("xp_bonus", 0)
+        total_gold_bonus += pet_info.get("gold_bonus", 0)
+
+    xp_earned = 10 * xp_multiplier * total_xp_bonus
+    gold_earned = 20 * gold_multiplier * total_gold_bonus
 
     user_data['xp'] += xp_earned
     user_data['gold'] += gold_earned
