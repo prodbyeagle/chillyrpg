@@ -177,6 +177,7 @@ def create_new_player(name):
         'completed_missions': 0,
         'pet_points': 0,
         'active_missions': {},
+        'collected_rewards': {"xp": 0, "gold": 0},
         'active_rod': {},
         'active_pets': {},
         'pets': {},
@@ -4249,42 +4250,66 @@ class AFKFarmCog(commands.Cog):
         self.current_guild_index = 0
         self.afk_farm.start()
 
-    def cog_unload(self):
-        self.afk_farm.cancel()
-
     async def get_afk_rewards(self, user):
-        xp_earned = random.randint(1, 10)
-        gold_earned = random.randint(5, 20)
+        afk_xp = random.randint(1, 10)
+        afk_gold = random.randint(5, 20)
 
-        return xp_earned, gold_earned
+        return afk_xp, afk_gold
 
     async def has_active_pet(self, user):
         player_data = await load_player_data(user.name)
         active_pets = player_data.get('active_pets', {})
         return bool(active_pets)
 
-    @tasks.loop(seconds=10.0, reconnect=True)
+    @tasks.loop(seconds=1, reconnect=True)
     async def afk_farm(self):
         guild = self.bot.guilds[self.current_guild_index]
-        print(f"🤠 Checking Users in Guild: {guild.name}")
-
-        user = await get_all_player_names()
-
-        for user in guild.user:
-            if after.status in [nextcord.Status.offline, nextcord.Status.idle] and await self.has_active_pet(user):
-                xp_earned, gold_earned = await self.get_afk_rewards(user)
-
-                player_data = await load_player_data(user.name)
-                player_data["xp"] += xp_earned
-                player_data["gold"] += gold_earned
-                await save_player_data(user.name, player_data)
-
-                user_dm_channel = await user.create_dm()
-                await user_dm_channel.send(f"Du hast {xp_earned} XP und {gold_earned} Gold im AFK-Modus verdient!")
-
-                print(f"{user.name} ist jetzt AFK in Guild: {guild.name}")
-
+        
+        all_player_names = await get_all_player_names()
+        collected_rewards = {}
+        
+        for user_name in all_player_names:
+            user = guild.get_member_named(user_name)
+        
+            if user and user.status in [nextcord.Status.offline, nextcord.Status.idle] and await self.has_active_pet(user):
+                afk_xp, afk_gold = await self.get_afk_rewards(user)
+                player_data = await load_player_data(user_name)
+        
+                total_afk_gold = player_data["collected_rewards"]["gold"] + afk_gold
+                total_afk_xp = player_data["collected_rewards"]["xp"] + afk_xp
+        
+                player_data["collected_rewards"]["gold"] = total_afk_gold
+                player_data["collected_rewards"]["xp"] = total_afk_xp
+        
+                print(f"{user.name} im AFK-Modus")
+                await save_player_data(user_name, player_data)
+        
+                collected_rewards[user_name] = {"xp": afk_xp, "gold": afk_gold}
+        
         self.current_guild_index = (self.current_guild_index + 1) % len(self.bot.guilds)
+        
+        for user_name, rewards in collected_rewards.items():
+            total_afk_xp = rewards["xp"]
+            total_afk_gold = rewards["gold"]
+        
+            user = guild.get_member_named(user_name)
+        
+            if user and user.status == nextcord.Status.online and await self.has_active_pet(user):
+                print(f"User {user.name} ist wieder online. AFK-Modus beendet.")
+                afk_user = await bot.fetch_user(user.id)
+            
+                embed = nextcord.Embed(
+                    title=f"Willkommen zurück, {afk_user}!",
+                    description="Hier ist deine AFK-Farming-Bilanz:",
+                    color=0x00FF00
+                )
+                embed.add_field(name="XP", value=total_afk_xp, inline=True)
+                embed.add_field(name="Gold", value=total_afk_gold, inline=True)
+            
+                await afk_user.send(embed=embed)
+            
+                rewards["xp"] = 0
+                rewards["gold"] = 0
 
     @afk_farm.before_loop
     async def before_afk_farm(self):
@@ -4301,6 +4326,46 @@ async def startafk(ctx):
     afk_cog = AFKFarmCog(bot)
     bot.add_cog(afk_cog)
     await ctx.send("AFK Farming wurde gestartet!", ephemeral=True) 
+
+# 🙂 /stopafk
+@bot.slash_command(
+    name='stopafk',
+    description='🙂 Stop the AFK System!'
+)
+@log_command('stopafk')
+async def stopafk(ctx):
+    afk_cog = None
+    for cog in bot.cogs.values():
+        if isinstance(cog, AFKFarmCog):
+            afk_cog = cog
+            break
+
+    if afk_cog:
+        bot.remove_cog(afk_cog)
+        await ctx.send("AFK Farming wurde gestoppt!", ephemeral=True)
+    else:
+        await ctx.send("AFK Farming wurde nicht gefunden. Es läuft möglicherweise nicht.", ephemeral=True)
+
+@bot.slash_command(
+    name='checkstatus',
+    description='check_status desc'
+)
+@log_command('checkstatus')
+async def check_status(ctx, member: nextcord.Member = None):
+    if member is None:
+        member = ctx.user
+
+    if member.status == nextcord.Status.online:
+        status_message = f"{member.display_name} ist online!"
+    elif member.status == nextcord.Status.idle:
+        status_message = f"{member.display_name} ist abwesend."
+    elif member.status == nextcord.Status.dnd:
+        status_message = f"{member.display_name} möchte nicht gestört werden."
+    else:
+        status_message = f"{member.display_name} ist offline."
+
+    await ctx.send(status_message)
+
 # -------------
 # ADMIN CMDS:
 
