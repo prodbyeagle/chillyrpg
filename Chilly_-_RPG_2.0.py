@@ -3282,7 +3282,7 @@ class ClickerView(View):
         self.count = self.load_count()
         self.clicked = False
         self.multiplier = 1
-        
+
     def add_xp(self, xp):
         file_name = f"{self.username}.json"
         if os.path.exists(file_name):
@@ -3382,18 +3382,27 @@ class ClickerView(View):
     async def click_button(self, button: nextcord.ui.Button, interaction: nextcord.Interaction):
         user_id = str(interaction.user.id)
         self.check_user_id(user_id)
-
+    
+        total_clicker_bonus = 0
+    
         if not self.clicked:
             self.clicked = False
-            more_clicks_level = self.player_data['masteries'].get('More Clicks', {}).get('current_level', 0)
+            more_clicks_level = self.player_data['masteries'].get('More Clicks', {}).get('current_level')
+            active_pets_data = self.player_data.get('active_pets', {})
+    
+            for pet_name, pet_info in active_pets_data.items():
+                clicker_bonus = active_pets_data[pet_name].get("clicker_bonus", 0)
+                total_clicker_bonus += clicker_bonus
+    
             clicks_multiplier = 1 + more_clicks_level
-            self.count += 1 * self.multiplier * clicks_multiplier
+            total_clicker_bonus = 1 * total_clicker_bonus
+            self.count += 1 * self.multiplier * clicks_multiplier * total_clicker_bonus
             self.save_count()
             self.add_xp(1 * self.multiplier * clicks_multiplier)
             self.add_gold(2 * self.multiplier * clicks_multiplier)
             embed = self.get_embed()
             await interaction.response.edit_message(embed=embed)
-
+    
         await self.perform_event(interaction)
 
     def check_user_id(self, user_id):
@@ -3988,10 +3997,26 @@ async def adoptpet(ctx):
     player_name = ctx.user.name
     player_data = await load_player_data(player_name)
     pets_data = load_pet_data()
-
     view = AdoptPetView(player_data)
-
     embed = nextcord.Embed(title="🐇 Adopt a New Pet", description="Choose a pet to adopt!")
+
+    if player_data is None or not player_data:
+        embed = nextcord.Embed(
+        title="**`❌ You don't have an active profile!`** </start:1178729424854728744> **`to Start`**",
+        color=nextcord.Color.red()
+        )
+        embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
+        await ctx.send(embed=embed)
+        return
+
+    if player_data is player_data.bot:
+        embed = nextcord.Embed(
+            title="**`❌ Bots don't have pets!`**",
+            color=nextcord.Color.red()
+        )
+        embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
+        await ctx.send(embed=embed)
+        return
 
     for pet in pets_data:
         embed.add_field(
@@ -4006,7 +4031,7 @@ async def adoptpet(ctx):
 
         view.add_item(button)
 
-    await ctx.send(embed=embed, view=view, ephemeral=True)
+    await ctx.send(embed=embed, view=view)
 
 # 🦍 /equippet
 @bot.slash_command(
@@ -4019,8 +4044,14 @@ async def equippet(ctx, pet_name: str):
         player_name = ctx.user.name
         player_data = await load_player_data(player_name)
 
-        if "active_pets" not in player_data:
-            player_data["active_pets"] = {}
+        if player_data is None or not player_data:
+            embed = nextcord.Embed(
+            title="**`❌ You don't have an active profile!`** </start:1178729424854728744> **`to Start`**",
+            color=nextcord.Color.red()
+            )
+            embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
+            await ctx.send(embed=embed)
+            return
 
         if pet_name in player_data["pets"]:
             if player_data["active_pets"]:
@@ -4086,6 +4117,24 @@ async def equippet(ctx, pet_name: str):
 async def petinfo(ctx, user: nextcord.Member):
     player_name = user.name
     player_data = await load_player_data(player_name)
+
+    if user == bot.user:
+        embed = nextcord.Embed(
+            title="**`❌ Bots don't have pets!`**",
+            color=nextcord.Color.red()
+        )
+        embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
+        await ctx.send(embed=embed, ephemeral=True)
+        return
+
+    if user is None or not player_data:
+        embed = nextcord.Embed(
+        title="**`❌ You don't have an active profile!`** </start:1178729424854728744> **`to Start`**",
+        color=nextcord.Color.red()
+        )
+        embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
+        await ctx.send(embed=embed, ephemeral=True)
+        return
 
     if not player_data.get('profile_visibility', True):
         visibility_embed = nextcord.Embed(
