@@ -456,7 +456,7 @@ async def inventory(ctx):
     embed.add_field(name="Items", value=items_text, inline=False)
 
     embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
-    await ctx.send(embed=embed, ephemeral=True)
+    await ctx.send(embed=embed)
 
     await save_player_data(player_name, player_data)
 
@@ -1645,7 +1645,7 @@ async def daily(ctx):
         color=nextcord.Color.red()
         )
         embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
         return
  
     if update_active:
@@ -1691,7 +1691,7 @@ async def daily(ctx):
     embed.add_field(name="🪙 Gold", value=formatted_gold, inline=False)
     embed.add_field(name="🌟 XP", value=random_xp, inline=False)
     embed.set_footer(text="🦅 | @prodbyeagle")
-    await ctx.send(embed=embed, ephemeral=True)
+    await ctx.send(embed=embed)
 
 # 🖼️ /weekly
 @bot.slash_command(
@@ -1729,7 +1729,7 @@ async def weekly(ctx):
             title="❌ **`You need to upgrade your Unlock /weekly mastery to use this command! Click this to visit the Masterys:`** </masterys:1179166654391930931>",
             color=nextcord.Color.red()
         )
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
         return
 
     mastery_level = player_data['masteries'].get('Reduce Rewards Cooldown', {}).get('current_level', 0)
@@ -1764,7 +1764,7 @@ async def weekly(ctx):
     embed.add_field(name="🪙 Gold", value=formatted_gold, inline=False)
     embed.add_field(name="🌟 XP", value=random_xp, inline=False)
     embed.set_footer(text="🦅 | @prodbyeagle")
-    await ctx.send(embed=embed, ephemeral=True)
+    await ctx.send(embed=embed)
 
 # 🌈 /monthly
 @bot.slash_command(
@@ -1802,7 +1802,7 @@ async def monthly(ctx):
             title="❌ **`You need to upgrade your Unlock /monthly mastery to use this command! Click this to visit the Masterys:`** </masterys:1179166654391930931>",
             color=nextcord.Color.red()
         )
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, ephemeral=True)
         return
 
     mastery_level = player_data['masteries'].get('Reduce Rewards Cooldown', {}).get('current_level', 0)
@@ -1820,7 +1820,7 @@ async def monthly(ctx):
         embed = nextcord.Embed(title="⏰ Monthly Reward Reminder", color=nextcord.Color.gold())
         embed.description = f"You have already claimed your Monthly reward. Next claim available at <t:{unix_timestamp_next_claim}:R>"
         embed.set_footer(text="🦅 | @prodbyeagle")
-        await ctx.send(embed=embed, ephemeral=True)
+        await ctx.send(embed=embed)
         return
 
     random_xp, random_gold = calculate_random_rewards(2500, 6250, 2000, 5000)
@@ -3021,7 +3021,7 @@ class DailyQuizModal(nextcord.ui.Modal):
             embed.add_field(name="🪙 Gold Reward", value=f"{self.gold_reward} gold", inline=True)
             embed.add_field(name="❇️ XP Reward", value=f"{self.xp_reward} XP", inline=True)
     
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.response.send_message(embed=embed)
     
             player_name = interaction.user.name
             player_data = await load_player_data(player_name)
@@ -4120,7 +4120,7 @@ async def petinfo(ctx, user: nextcord.Member):
                     pet_stats += f"\nFight Bonus: **{pet_info['fight_bonus']}**"
 
                 pet_list.append(pet_stats)
-                
+
             embed.set_footer(text="🦅 | @prodbyeagle", icon_url=pic_link)
             embed.add_field(name="📜 Owned Pets", value="\n\n".join(pet_list), inline=True)
 
@@ -4144,7 +4144,7 @@ async def petinfo(ctx, user: nextcord.Member):
 
             embed.add_field(name="✅ Active Pet", value="\n\n".join(active_pet_list), inline=True)
 
-        await ctx.send(embed=embed, ephemeral=True)
+        await ctx.send(embed=embed)
     else:
         await ctx.send(f"No pet data found for {user.display_name}.", ephemeral=True)
 
